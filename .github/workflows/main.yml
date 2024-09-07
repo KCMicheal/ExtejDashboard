@@ -1,0 +1,65 @@
+
+name: build and test and deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy-to-github-pages:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write 
+    steps:
+      # Checkout the code
+      - uses: actions/checkout@v4
+
+      # Install .NET Core SDK
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+  
+      - name: Install NPM dependencies
+        run: npm install --prefix ./ExtejDashboard
+  
+      - name: Restore .NET dependencies
+        run: dotnet restore ./DotNetTribe_UI/./ExtejDashboard.csproj
+          
+      # Install dotnet wasm buildtools workload
+      - name: Install .NET WASM Build Tools
+        run: dotnet workload install wasm-tools
+          
+      # Publishes Blazor project to the release-folder
+      - name: Publish .NET Core Project
+        run: dotnet publish ./ExtejDashboard/ExtejDashboard.csproj -c:Release -p:GHPages=true -o dist/Web --nologo
+
+      # changes the base-tag in index.html from '/' to 'DotNetTribe-UI' to match the GitHub Pages repository subdirectory
+      - name: Change base-tag in index.html from / to DotNetTribe-UI
+        run: sed -i 's/<base href="\/" \/>/<base href="\/ExtejDashboard\/" \/>/g' dist/Web/wwwroot/index.html
+
+      # copy index.html to 404.html to serve the same file when a file is not found
+      - name: copy index.html to 404.html
+        run: cp dist/Web/wwwroot/index.html dist/Web/wwwroot/404.html
+        
+      # add .nojekyll file to tell GitHub pages not to treat this as a Jekyll project. (Allow files and folders to start with an underscore)
+      - name: Add .nojekyll file
+        run: touch dist/Web/wwwroot/.nojekyll
+
+      - name: Commit wwwroot to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          permissions: write-all
+          BRANCH: gh-pages
+          FOLDER: dist/Web/wwwroot
+
