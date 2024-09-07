@@ -34,7 +34,7 @@ jobs:
         run: npm install --prefix ./ExtejDashboard
   
       - name: Restore .NET dependencies
-        run: dotnet restore ./DotNetTribe_UI/./ExtejDashboard.csproj
+        run: dotnet restore ./ExtejDashboard/ExtejDashboard.csproj
           
       # Install dotnet wasm buildtools workload
       - name: Install .NET WASM Build Tools
