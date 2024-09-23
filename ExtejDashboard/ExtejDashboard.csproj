@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ExtejDashboard_Domain\ExtejDashboard_Domain.csproj" />
+    <ProjectReference Include="..\ExtejDashboard_Services\ExtejDashboard_Services.csproj" />
   </ItemGroup>
 
 </Project>

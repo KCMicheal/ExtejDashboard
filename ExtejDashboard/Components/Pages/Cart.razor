@@ -1,0 +1,40 @@
+﻿@page "/cart"
+@using ExtejDashboard_Domain.Models
+@using ExtejDashboard_Services.Services
+@using ExtejDashboard_Services.Services.Interfaces
+@inject ICartService CartService
+
+<h3>Your Cart</h3>
+
+@if (cartItems == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    foreach (var item in cartItems)
+    {
+        <div>
+            <h4>@item.Product!.Name</h4>
+            <p>Quantity: @item.Quantity</p>
+            <p>Total Price: @item.TotalPrice</p>
+        </div>
+    }
+
+    <button @onclick="Checkout" class=" ">Checkout</button>
+}
+
+@code {
+    private List<CartItem> cartItems = new List<CartItem>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        cartItems = await CartService.GetCartItemsAsync();
+    }
+
+    private async Task Checkout()
+    {
+        await CartService.CheckoutAsync(cartItems);
+        cartItems = new List<CartItem>();// Clear cart UI after checkout
+    }
+}

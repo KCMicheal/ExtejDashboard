@@ -1,0 +1,78 @@
+@rendermode InteractiveServer
+
+@page "/products"
+@using ExtejDashboard_Domain.Models
+@using ExtejDashboard_Services.Services
+@using ExtejDashboard_Services.Services.Interfaces
+@inject ICartService CartService
+@inject IProductService ProductService
+
+<h3 class="font-bold text-3xl">Available Products</h3>
+<div class=" h-vh w-full flex flex-row p-10 gap-8 justify-center items-center"> 
+    
+    @if (products == null)
+    {
+        <p class="text-red-600">Loading...</p>
+    }
+    else
+    {
+        <div>
+        </div>
+        foreach (var product in products)
+        {
+            <div class=" w-full flex flex-col border-2 p-6 rounded-2xl shadow-lg space-y-6">
+                <h4 class="text-2xl font-semibold text-center">@product.Name</h4>
+                <p>@product.Description</p>     
+                <p>Price: <span class="text-lg font-bold">@product.Price</span></p>
+                <button @onclick="() => AddToCart(product!.Id, addingMsg)" class="btn-primary">
+                    @if (addToCartState == "Adding..." && product.Id == product.Id)
+                    {
+                        @addingMsg
+                    }
+                    else if (addToCartState == "Added" && product.Id == product.Id)
+                    {
+                        @addedMsg
+                    }
+                    else if (addToCartState == "Failed" && product.Id == product.Id)
+                    {
+                        @failedToAddMsg
+                    } 
+                    else {
+                        @addToCartMsg
+                    }
+                </button>
+            </div>
+        }
+    }
+</div>
+
+
+@code {
+    private string addToCartState = "";
+    private string addToCartMsg = "Add To Cart";
+    private string addingMsg = "Adding...";
+    private  string addedMsg = "Added!";
+    private string failedToAddMsg = "Failed!, try again!";
+    private IEnumerable<Product> products = new List<Product>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        products = await ProductService.GetProductsAsync();
+        
+    }
+
+    private async Task AddToCart(Guid productId, string state)
+    {
+        await InvokeAsync(() => StateHasChanged());
+        addToCartState = state;
+        await CartService.AddToCartAsync(productId, 1);
+        addToCartState = "Added";
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    private async Task UpdateAddToCartState(string newState)
+    {
+        addToCartState = newState;
+        await InvokeAsync(() => StateHasChanged());
+    }
+}
