@@ -4,29 +4,30 @@
 
 @layer base{
     * {
-        @apply font-poppins text-gray-500 
+        @apply font-poppins text-gray-500;
     }
 
-    *:focus {
+    /* *:focus {
         @apply text-gray-700
     }
     *:hover {
         @apply text-white
-    }
+    }*/
     a:hover {
-        @apply bg-blue-700 rounded-2xl shadow-lg text-white
-    }
+        @apply bg-blue-700 rounded-2xl shadow-lg text-white;
+    } 
 }
 .btn-primary {
-    @apply px-4 py-2 font-poppins text-white active:font-bold font-semibold
+    @apply px-4 py-2 font-poppins font-semibold bg-[#007AFF] text-white 
+    hover:bg-white hover:text-black hover:shadow-lg rounded-lg active:scale-[110%] transition-transform ease-in ;
 }
 
 .text-heading1 {
-    @apply font-poppins text-2xl font-bold
+    @apply font-poppins text-2xl font-bold;
 }
 
 .text-heading2 {
-    @apply font-poppins text-lg font-semibold
+    @apply font-poppins text-lg font-semibold;
 }
 
 
